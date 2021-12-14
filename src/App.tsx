@@ -1,9 +1,10 @@
 import React from 'react';
+import ContractorForm from './components/ContractorForm';
 
 function App() {
   return (
     <div>
-      <h1>Hello World</h1>
+      <ContractorForm />
     </div>
   );
 }
