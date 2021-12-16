@@ -7,11 +7,13 @@ const ContractorForm = () => {
     register,
     formState: { errors },
     handleSubmit,
+    getValues,
   } = useForm();
+
+  const isCompany = getValues('contractorType') === 'company';
 
   const onSubmit = async (data: any) => {
     const fields = { fields: data };
-    console.log(fields);
   };
 
   return (
@@ -53,6 +55,7 @@ const ContractorForm = () => {
             {...register('contractorType')}
             value='person'
             name='contractorType'
+            defaultChecked
           />
           Person
         </label>
@@ -72,10 +75,21 @@ const ContractorForm = () => {
 
         <InputForm
           name='idNumber'
-          label='ID Number'
-          type='number'
-          placeholder='PESEL or NIP'
-          rules={{ required: 'This field is required' }}
+          label={isCompany ? 'NIP' : 'PESEL'}
+          type='text'
+          placeholder={isCompany ? '5842751979' : '02070803628'}
+          rules={{
+            required: 'This field is required',
+            pattern: isCompany
+              ? {
+                  value: /^[0-9]{10}$/,
+                  message: 'invalid NIP',
+                }
+              : {
+                  value: /^[0-9]{11}$/,
+                  message: 'invalid PESEL',
+                },
+          }}
           register={register}
           errors={errors}
         />
