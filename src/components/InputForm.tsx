@@ -24,11 +24,9 @@ const InputForm: React.FC<InputProps> = ({
         {...register(name, rules)}
         {...rest}
       />
-      {errors[name] && (
-        <div className='mb-3 text-normal text-red-500'>
-          {errors[name].message}
-        </div>
-      )}
+      <div className='mb-4 text-normal text-red-500'>
+        {errors[name] && errors[name].message}
+      </div>
     </React.Fragment>
   );
 };

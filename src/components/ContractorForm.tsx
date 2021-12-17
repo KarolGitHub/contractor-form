@@ -1,6 +1,7 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import InputForm from './InputForm';
+import avatar from '../assets/avatar.svg';
 
 const ContractorForm = () => {
   const {
@@ -10,10 +11,21 @@ const ContractorForm = () => {
     getValues,
   } = useForm();
 
-  const isCompany = getValues('contractorType') === 'company';
+  const [photo, setPhoto] = useState(avatar);
+
+  const isCompany = getValues('type') === 'company';
 
   const onSubmit = async (data: any) => {
     const fields = { fields: data };
+    console.log(fields);
+  };
+
+  const handlePhotoChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    e.preventDefault();
+    if (e.target.files) {
+      console.log(e.target.files[0]);
+      setPhoto(URL.createObjectURL(e.target.files[0]));
+    }
   };
 
   return (
@@ -29,7 +41,7 @@ const ContractorForm = () => {
           name='firstName'
           label='First Name'
           type='text'
-          placeholder='First Name'
+          placeholder='James'
           rules={{ required: 'This field is required' }}
           register={register}
           errors={errors}
@@ -39,22 +51,22 @@ const ContractorForm = () => {
           name='lastName'
           label='Last Name'
           type='text'
-          placeholder='Smith'
+          placeholder='Johnson'
           rules={{ required: 'This field is required' }}
           register={register}
           errors={errors}
         />
 
-        <label className='text-gray-600 font-medium block mt-4'>
+        <label className='text-gray-600 font-medium block'>
           Contractor type
         </label>
         <label className='inline-block'>
           <input
             className='mt-4 mr-1'
             type='radio'
-            {...register('contractorType')}
+            {...register('type')}
             value='person'
-            name='contractorType'
+            name='type'
             defaultChecked
           />
           Person
@@ -64,9 +76,9 @@ const ContractorForm = () => {
           <input
             className='mt-4 mr-1'
             type='radio'
-            {...register('contractorType')}
+            {...register('type')}
             value='company'
-            name='contractorType'
+            name='type'
           />
           Company
         </label>
@@ -94,24 +106,39 @@ const ContractorForm = () => {
           errors={errors}
         />
 
-        <div className='mt-4'>
-          <label className='text-gray-600 font-medium block mt-4'>Photo</label>
-          <div className='mt-1 flex items-center'>
-            <span className='inline-block h-12 w-12 rounded-full overflow-hidden bg-gray-100'>
-              <svg
-                className='h-full w-full text-gray-300'
-                fill='currentColor'
-                viewBox='0 0 24 24'
-              >
-                <path d='M24 20.993V24H0v-2.996A14.977 14.977 0 0112.004 15c4.904 0 9.26 2.354 11.996 5.993zM16.002 8.999a4 4 0 11-8 0 4 4 0 018 0z' />
-              </svg>
-            </span>
-            <button
-              type='button'
-              className='ml-5 bg-white py-2 px-3 border border-gray-300 rounded-md shadow-sm text-sm leading-4 font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500'
-            >
-              Change
-            </button>
+        <div className='w-1/2 min-w-max'>
+          <div>
+            <label className='text-gray-600 font-medium block mt-4'>
+              Photo
+            </label>
+            <div className='mt-1 flex justify-center p-3 border-2 border-gray-300 border-dashed rounded-md'>
+              <div className='space-y-1 text-center'>
+                <img
+                  className='inline object-cover aspect-square'
+                  style={{ width: '170px', height: '170px' }}
+                  src={photo}
+                  alt=''
+                />
+                <div className='flex text-sm justify-center text-gray-600'>
+                  <label
+                    htmlFor='file-upload'
+                    className='relative cursor-pointer bg-white rounded-md font-medium text-indigo-600 hover:text-indigo-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-indigo-500'
+                  >
+                    <span>Upload image</span>
+                    <input
+                      id='file-upload'
+                      type='file'
+                      className='sr-only'
+                      accept='image/jpg, image/jpeg'
+                      {...register('photo')}
+                      onChange={handlePhotoChange}
+                      name='file-upload'
+                    />
+                  </label>
+                </div>
+                <p className='text-xs text-gray-500'>JPG/JPEG</p>
+              </div>
+            </div>
           </div>
         </div>
 
