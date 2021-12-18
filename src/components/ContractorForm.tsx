@@ -50,15 +50,15 @@ const ContractorForm = () => {
         body: formData,
         ...params,
       });
-      const resJson = await res.json();
+      const resJson = await JSON.stringify(res.json());
       console.log(resJson);
-      setToastData({ message: 'Save successful', type: 'success' });
-    } catch (err: any) {
-      if (![404, 500].includes(err.status)) {
-        setToastData({ message: err.message, type: 'error' });
+      if (res.status === 404) {
+        setToastData({ message: 'Unable to find save method', type: 'error' });
       } else {
-        setToastData({ message: 'unable to find save method', type: 'error' });
+        setToastData({ message: 'Save successful', type: 'success' });
       }
+    } catch (err: any) {
+      setToastData({ message: err.message, type: 'error' });
     } finally {
       setLoading(false);
     }
