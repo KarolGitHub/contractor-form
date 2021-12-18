@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import InputForm from './InputForm';
 import avatar from '../assets/avatar.svg';
+import Spinner from './Spinner';
 
 const params = {
   method: 'POST',
@@ -27,7 +28,7 @@ const ContractorForm = () => {
   const handlePhotoChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     e.preventDefault();
     if (e.target.files) {
-      setPhoto(e.target.files[0]);
+      setPhoto(URL.createObjectURL(e.target.files[0]));
     }
   };
 
@@ -65,7 +66,7 @@ const ContractorForm = () => {
         Add Contractor
       </h1>
       <form
-        className='max-w-xl m-auto py-10 mt-10 px-12 border'
+        className='max-w-xl m-auto py-10 mt-10 px-12 border rounded-md'
         id='contractorForm'
         onSubmit={handleSubmit(onSubmit)}
       >
@@ -175,9 +176,10 @@ const ContractorForm = () => {
         </div>
 
         <button
-          className='flex justify-center items-center mt-4 w-full bg-green-400 hover:bg-green-600 text-green-100 border py-3 px-6 font-semibold text-md rounded'
+          className='mt-4 w-full bg-green-400 hover:bg-green-600 text-green-100 border py-3 px-6 font-semibold text-md rounded'
           type='submit'
         >
+          {loading && <Spinner />}
           Submit
         </button>
       </form>
