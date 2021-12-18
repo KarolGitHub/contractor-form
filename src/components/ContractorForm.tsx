@@ -3,6 +3,13 @@ import { useForm } from 'react-hook-form';
 import InputForm from './InputForm';
 import avatar from '../assets/avatar.svg';
 
+const params = {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+  },
+};
+
 const ContractorForm = () => {
   const {
     register,
@@ -11,30 +18,55 @@ const ContractorForm = () => {
     getValues,
   } = useForm();
 
-  const [photo, setPhoto] = useState(avatar);
+  const [photo, setPhoto] = useState<any>(avatar);
+  const [error, setError] = useState<string | null>(null);
+  const [loading, setLoading] = useState(false);
 
   const isCompany = getValues('type') === 'company';
-
-  const onSubmit = async (data: any) => {
-    const fields = { fields: data };
-    console.log(fields);
-  };
 
   const handlePhotoChange: React.ChangeEventHandler<HTMLInputElement> = (e) => {
     e.preventDefault();
     if (e.target.files) {
-      console.log(e.target.files[0]);
-      setPhoto(URL.createObjectURL(e.target.files[0]));
+      setPhoto(e.target.files[0]);
     }
   };
 
-  return (
+  const onSubmit = async (data: any) => {
+    const formData = new FormData();
+    formData.append(
+      'contractor',
+      new Blob([JSON.stringify({ photo: photo, ...data })])
+    );
+
+    setLoading(true);
+    try {
+      const res = await fetch('http://localhost:60001/Contractor/Save', {
+        body: formData,
+        ...params,
+      });
+      const resJson = await res.json();
+      console.log(resJson);
+    } catch (err: any) {
+      if (![404, 500].includes(err.status)) {
+        console.log(err);
+      } else {
+        setError('unable to find save method');
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return error ? (
+    <h1>{error}</h1>
+  ) : (
     <React.Fragment>
       <h1 className='text-center text-4xl font-semibold mt-10'>
         Add Contractor
       </h1>
       <form
         className='max-w-xl m-auto py-10 mt-10 px-12 border'
+        id='contractorForm'
         onSubmit={handleSubmit(onSubmit)}
       >
         <InputForm
@@ -143,7 +175,7 @@ const ContractorForm = () => {
         </div>
 
         <button
-          className='mt-4 w-full bg-green-400 hover:bg-green-600 text-green-100 border py-3 px-6 font-semibold text-md rounded'
+          className='flex justify-center items-center mt-4 w-full bg-green-400 hover:bg-green-600 text-green-100 border py-3 px-6 font-semibold text-md rounded'
           type='submit'
         >
           Submit
