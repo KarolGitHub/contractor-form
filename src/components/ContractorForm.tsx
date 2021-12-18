@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form';
 import InputForm from './InputForm';
 import avatar from '../assets/avatar.svg';
 import Spinner from './Spinner';
+import Toast from './Toast';
 
 const params = {
   method: 'POST',
@@ -20,8 +21,8 @@ const ContractorForm = () => {
   } = useForm();
 
   const [photo, setPhoto] = useState<any>(avatar);
-  const [error, setError] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
+  const [toastData, setToastData] = useState({ message: '', type: '' });
 
   const isCompany = getValues('type') === 'company';
 
@@ -30,6 +31,10 @@ const ContractorForm = () => {
     if (e.target.files) {
       setPhoto(URL.createObjectURL(e.target.files[0]));
     }
+  };
+
+  const closeToastHandler = () => {
+    setToastData({ message: '', type: '' });
   };
 
   const onSubmit = async (data: any) => {
@@ -47,21 +52,28 @@ const ContractorForm = () => {
       });
       const resJson = await res.json();
       console.log(resJson);
+      setToastData({ message: 'Save successful', type: 'success' });
     } catch (err: any) {
       if (![404, 500].includes(err.status)) {
-        console.log(err);
+        setToastData({ message: err.message, type: 'error' });
       } else {
-        setError('unable to find save method');
+        setToastData({ message: 'unable to find save method', type: 'error' });
       }
     } finally {
       setLoading(false);
     }
   };
 
-  return error ? (
-    <h1>{error}</h1>
-  ) : (
+  return (
     <React.Fragment>
+      {toastData.type && (
+        <Toast
+          type={toastData.type as any}
+          message={toastData.message + ''}
+          closed={closeToastHandler}
+        />
+      )}
+
       <h1 className='text-center text-4xl font-semibold mt-10'>
         Add Contractor
       </h1>
@@ -176,7 +188,7 @@ const ContractorForm = () => {
         </div>
 
         <button
-          className='mt-4 w-full bg-green-400 hover:bg-green-600 text-green-100 border py-3 px-6 font-semibold text-md rounded'
+          className='relative mt-4 w-full bg-green-400 hover:bg-green-600 text-green-100 border py-3 px-6 font-semibold text-md rounded leading-5'
           type='submit'
         >
           {loading && <Spinner />}
